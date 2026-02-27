@@ -1,0 +1,13 @@
+
+### Trade
+POST http://localhost:8080/api/trades
+Content-Type: application/json
+
+{
+    "ticker": "TSLA",
+    "quantity": 50
+}
+
+### News
+GET http://localhost:8080/api/news/TSLA
+Content-Type: application/json

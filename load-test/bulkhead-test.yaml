@@ -1,0 +1,66 @@
+config:
+  target: "http://localhost:8080"
+  phases:
+    - duration: 60
+      arrivalRate: 5
+      name: "Warm up - Baseline Trading"
+    - duration: 30
+      arrivalRate: 50
+      name: "Spike - High Market Volatility" # This should trigger the Bulkhead
+
+  # Spring Boot 4 Native Versioning Header
+  defaults:
+    headers:
+      X-API-Version: "1.0"
+      Content-Type: "application/json"
+
+scenarios:
+  - name: "Standard Stock Trade"
+    flow:
+      - post:
+          url: "/api/trades"
+          json:
+            ticker: "AAPL"
+            quantity: 10
+            # 1. Capture the Trace ID from the response header
+          capture:
+            - header: "X-Trace-Id"
+              as: "lastTraceId"
+              # 2. Expect a success. If it's a 429, Artillery prints the 'lastTraceId'
+          # Validate that we either get a success (201) or a bulkhead rejection (429)
+          expect:
+            - statusCode: [201, 429]
+              # 3. Log it (Optional: only visible if you run with DEBUG=http)
+              # log: "Trade processed with ID: {{ lastTraceId }}"
+
+  - name: "Standard News Fetch"
+    flow:
+      - get:
+          url: "/api/news/AAPL"
+          expect:
+            - statusCode: 200 # Fallback should still return 200 OK
+
+
+#config:
+#  target: "http://localhost:8080"
+#  phases:
+#    - duration: 60
+#      arrivalRate: 1
+#      rampTo: 20
+#      name: "Ramping up news service pressure"
+#  plugins:
+#    expect: {}
+#
+#scenarios:
+#  - name: "High-concurrency News Fetch"
+#    flow:
+#      - get:
+#          url: "/api/news/AAPL"
+#          expect:
+#            - statusCode: 200 # Fallback should still return 200 OK
+#  - name: "High-concurrency trade"
+#    flow:
+#      - get:
+#          url: "api/trades"
+#          expect:
+#            - statusCode: 200 # Fallback should still return 200 OK

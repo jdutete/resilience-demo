@@ -1,0 +1,55 @@
+spring:
+  application:
+    name: stock-trading-app
+  threads:
+    virtual:
+      enabled: true # Best practice for SB4 Bulkheads
+  mvc:
+    apiversion:
+      # Sets the default version if the client doesn't provide one
+      default: "1.0"
+
+      # (Optional) Restrict traffic to only these specific versions
+      supported: "1.0, 1.1, 2.0"
+
+      # Decide whether a version is mandatory (defaults to true in SB4)
+      version-required: false
+
+      use:
+        header: "X-API-Version" # The strategy we're using
+
+resilience4j:
+  bulkhead:
+    configs:
+      default:
+        max-concurrent-calls: 10
+        max-wait-duration: 0ms
+    instances:
+      tradeService:
+        base-config: default
+        max-concurrent-calls: 5
+      newsService:
+        max-concurrent-calls: 5
+        max-wait-duration: 100ms
+
+  http:
+    client:
+      connect-timeout: 2s
+      read-timeout: 5s
+
+management:
+  tracing:
+    sampling:
+      probability: 1.0  # Record every single trade/news request
+#  otlp:
+#    tracing:
+#      endpoint: "http://localhost:4318/v1/traces" # Default OTel collector port
+  endpoints:
+    web:
+      exposure:
+        include: health, info, prometheus, tracing # Expose tracing metrics
+
+logging:
+  pattern:
+    # This pattern adds: [service-name, traceId, spanId]
+    level: "%5p [${spring.application.name:},%X{traceId:-},%X{spanId:-}]"
