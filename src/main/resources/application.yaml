@@ -41,13 +41,27 @@ management:
   tracing:
     sampling:
       probability: 1.0  # Record every single trade/news request
+  opentelemetry:
+    tracing:
+      export:
+        otlp:
+          endpoint: "http://localhost:4318/v1/traces"
 #  otlp:
 #    tracing:
 #      endpoint: "http://localhost:4318/v1/traces" # Default OTel collector port
   endpoints:
     web:
       exposure:
-        include: health, info, prometheus, tracing # Expose tracing metrics
+        include: "health, info, prometheus, tracing" # Expose tracing metrics
+  endpoint:
+    prometheus:
+      # 2. Ensure the endpoint itself is enabled
+      enabled: true
+    metrics:
+      export:
+        prometheus:
+          # 3. Ensure the prometheus exporter is active
+          enabled: true
 
 logging:
   pattern:

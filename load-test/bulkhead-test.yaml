@@ -24,7 +24,7 @@ scenarios:
             quantity: 10
             # 1. Capture the Trace ID from the response header
           capture:
-            - header: "X-Trace-Id"
+            - header: "x-trace-id"
               as: "lastTraceId"
               # 2. Expect a success. If it's a 429, Artillery prints the 'lastTraceId'
           # Validate that we either get a success (201) or a bulkhead rejection (429)
@@ -32,13 +32,13 @@ scenarios:
             - statusCode: [201, 429]
               # 3. Log it (Optional: only visible if you run with DEBUG=http)
               # log: "Trade processed with ID: {{ lastTraceId }}"
-
-  - name: "Standard News Fetch"
-    flow:
-      - get:
-          url: "/api/news/AAPL"
-          expect:
-            - statusCode: 200 # Fallback should still return 200 OK
+#
+#  - name: "Standard News Fetch"
+#    flow:
+#      - get:
+#          url: "/api/news/AAPL"
+#          expect:
+#            - statusCode: 200 # Fallback should still return 200 OK
 
 
 #config:

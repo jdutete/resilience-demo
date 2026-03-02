@@ -23,7 +23,6 @@ public class GlobalResilienceHandler {
     );
 
     problemDetail.setTitle("Service Limit Reached");
-    problemDetail.setType(URI.create("https://api.stocks.com/errors/bulkhead-full"));
     problemDetail.setProperty("timestamp", Instant.now());
 
     return problemDetail;
