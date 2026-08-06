@@ -17,3 +17,15 @@ services:
       - GF_SECURITY_ADMIN_PASSWORD=admin
     depends_on:
       - prometheus-rd
+
+  otel-collector-rd:
+    image: otel/opentelemetry-collector-contrib:latest
+    container_name: otel-collector-rd
+    command: [ "--config=/etc/otelcol-contrib/otel-collector-config.yml" ]
+    volumes:
+      - ./otel-collector-config.yml:/etc/otelcol-contrib/otel-collector-config.yml
+    ports:
+      - "4317:4317"   # OTLP gRPC
+      - "4318:4318"   # OTLP HTTP
+    depends_on:
+      - prometheus-rd
