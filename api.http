@@ -11,3 +11,16 @@ Content-Type: application/json
 ### News
 GET http://localhost:8080/api/news/TSLA
 Content-Type: application/json
+
+
+### Bitly
+POST http://localhost:8080/bitly
+Content-Type: application/json
+
+{
+  "longUrl": "https://www.google.com"
+}
+
+### Bitly
+GET http://localhost:8080/bitly/1
+Content-Type: application/json
